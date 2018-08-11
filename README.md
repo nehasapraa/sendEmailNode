@@ -14,6 +14,8 @@ npm install
 //start REST server
 npm start
 ```
+## Prerequisites
+Create a .env file to store all API keys
 
 Now, the service runs on your local machine. After running the rest server, the
 command line will notify on which port the service is running on. Service

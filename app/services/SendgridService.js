@@ -54,7 +54,8 @@ function sendEmail(inputvar,response) {
                 var body = Buffer.concat(chunks);
                 console.log(body.toString());
             });
-            if(res.statusCode === '202'){
+            if(res.statusCode == '202'){
+                console.log('request',res.statusCode);
                 response.render('index', {
                     sent: true,
                     provider: 'SENDGRID',

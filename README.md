@@ -35,14 +35,6 @@ Duplicate email address is not supported by Sendgrid.
 ```cli
 Change API key for Sendgrid in the code.
 ```
-## Test Email address for Sendgrid
-```
-you can use any email address in the input fields.
-```
-## Test Email address for Mailgun
-```
-bizztech8@gmail.com,techbizz28@gmail.com,neha.sapraa@gmail.com
-```
 This is compulsory to use above email address for Mailgun provider as we need to specify all email addresses in the Mailgun setting recipients list.This is because we are using their test domain for sending emails. If you want to send emails on your own account please let me know I will add the same in the Mailgun.
 
 Please check the ApplicationFlow.png to understand the flow of code.

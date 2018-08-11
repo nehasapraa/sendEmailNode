@@ -11,9 +11,6 @@ From the command line
 //install dependencies
 npm install
 
-//seed the remote database with dummy data
-npm run seed
-
 //start REST server
 npm start
 ```

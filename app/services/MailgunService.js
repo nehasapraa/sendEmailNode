@@ -2,10 +2,10 @@
  * Mailgun Service
  */
 var request = require("request");
-const MAILGUN_API_KEY = '26c6e64cf2739bdeeb8f993efabee7bd-a5d1a068-7a409911';
-const MAILGUN_TEST_DOMAIN = 'sandboxcd2ebe92bad74dd59ec52cacb4d29979.mailgun.org';
+const MAILGUN_API_KEY = process.env.MAILGUN_API_KEY;
+const MAILGUN_TEST_DOMAIN = process.env.MAILGUN_TEST_DOMAIN;
 const MAILGUN_HOSTNAME = 'https://api.mailgun.net';
-const MAILGUN_SENDER = 'neha.sapraa@gmail.com';
+const MAILGUN_SENDER = process.env.SENDER;
 
 function sendEmail(req, res) {
     var emails = req.body.email.split(",");
@@ -39,6 +39,12 @@ function sendEmail(req, res) {
                 response: response
             });
             }
+            else{
+            res.render('error', {
+                message: JSON.parse(body).message,
+                status: response.statusCode,
+            });
+        }
         }
     );
 

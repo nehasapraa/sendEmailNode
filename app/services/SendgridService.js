@@ -3,9 +3,10 @@
  */
 var http = require("https");
 var path = require('path');
-const SENDGRID_API_KEY = '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';
+
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 const SENDGRID_HOSTNAME = 'api.sendgrid.com';
-const SENDGRID_SENDER = 'test.account@gmail.com';
+const SENDGRID_SENDER = process.env.SENDER;
 const SENDGRID_SUBJECT = 'TEST EMAIL FROM SENDGRID';
 var MailgunService = require(path.join(__dirname, '../', "services/MailgunService"));
 

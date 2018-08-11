@@ -1,7 +1,7 @@
 # sendEmailNode
 sendEmailNode is a service (backend + frontend) that accepts the necessary information and sends emails. It should provide an abstraction between two different email service providers. If one of the services goes down, your service can quickly failover to a different provider without affecting your customers.
 
-This service is using http api calls for both providers(Mailgun and Sendgrid).
+This service is using http api calls for both providers(Mailgun and Sendgrid).No client libraries are used.
 
 ## How to run this service
 

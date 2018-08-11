@@ -1,0 +1,27 @@
+doctype html
+html
+    head
+        title= title
+        block stylesheets
+            link(rel='stylesheet', href='/stylesheets/style.css')
+    body
+        if sent
+            h1 Email sent!
+        else
+            h1 Send Email Code
+            p Send emails via Sendgrid and Mailgun
+        hr
+        if sent
+            p Email succesfully sent via #{ provider }
+        else
+            div(class="container")
+                h1 Send Email Form
+                form(name="emailform", action="/sendemail", method="post")
+                    p(style ="margin: 0px;") Email address
+                    input(type="email", placeholder="Enter comma separated multiple email address for the 'test hello' email.", name="email", required, style="width: 50%; margin-right: 15px;",multiple)
+                    p(style='white-space:pre;margin:0px') CC email address
+                    input(type="email", placeholder="Enter multiple CC email address", name="email_cc", style="width: 50%; margin-right: 15px;",multiple,required)
+                    p(style='white-space:pre;margin:0px') BCC email address
+                    input(type="email", placeholder="Enter multiple BCC email address", name="email_bcc", style="width: 50%; margin-right: 15px;",multiple,required)
+                    p(style='white-space:pre;')
+                    input(type="submit", value="Send")

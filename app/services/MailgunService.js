@@ -75,9 +75,7 @@ MailgunService.prototype.mail = function (message, callback) {
 
     request.on('response', function (response) {
         if (response.statusCode == 200) {
-            var provider ='Mailgun';
             callback();
-            // callback();
             response.socket.end();
             return;
         }
@@ -89,9 +87,10 @@ MailgunService.prototype.mail = function (message, callback) {
         });
 
         response.on('end', function (chunk) {
+            console.log('ERR',body);
             var error = new Error('Email could not be sent');
             error.httpStatusCode = response.statusCode;
-            error.httpResponseData = JSON.parse(body).message;
+            error.httpResponseData = response.body;
             callback(error);
         });
     });

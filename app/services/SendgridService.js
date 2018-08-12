@@ -1,24 +1,58 @@
 /**
  * Sendgrid Service
  */
-var http = require("https");
-var path = require('path');
+var req= require("request");
 
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
-const SENDGRID_HOSTNAME = 'api.sendgrid.com';
-const SENDGRID_SENDER = process.env.SENDER;
-const SENDGRID_SUBJECT = 'TEST EMAIL FROM SENDGRID';
-var MailgunService = require(path.join(__dirname, '../', "services/MailgunService"));
 
-function sendEmail(inputvar,response) {
+module.exports = SendgridService;
 
+/**
+ * Creates an instance of the SendGrid email provider.
+ *
+ * @constructor
+ * @this {SendgridService}
+ */
+function SendgridService(apiUser, apiKey, options) {
+    if (typeof apiUser !== 'string'
+        || typeof apiKey !== 'string') {
+        throw new Error('Invalid parameters');
+    }
+
+    options = options || {};
+
+    this.apiUser = apiUser;
+    this.apiKey = apiKey;
+    this.options = options;
+}
+
+
+/**
+ * send email through the SendGrid API.
+ *
+ * @this {SendgridService}
+ * @param {Message} message The message to send.
+ * @param {SendgridService} [callback] Notified when the attempt fails or succeeds.
+ */
+SendgridService.prototype.mail = function (message, callback) {
+
+
+
+    var options = {
+        "method": "POST",
+        "url": this.options.apiHostname+'/v3/mail/send',
+        "port":  this.options.apiPort,
+        "headers": {
+            "authorization": "Bearer "+ this.apiKey,
+            "content-type": "application/json"
+        }
+    };
 
     var emailRecipients = [],
         emailRecipientsCC = [],
         emailRecipientsBCC = [],
-        emails = inputvar.body.email.split(","),
-        emails_cc = inputvar.body.email_cc.split(","),
-        emails_bcc = inputvar.body.email_bcc.split(",");
+        emails = message.body.email.split(','),
+        emails_cc = message.body.email_cc.split(','),
+        emails_bcc = message.body.email_bcc.split(',');
 
     emails.forEach(function (element) {
         emailRecipients.push({email: element})
@@ -30,60 +64,55 @@ function sendEmail(inputvar,response) {
         emailRecipientsBCC.push({email: element})
     });
 
-    var options = {
-        "method": "POST",
-        "hostname": SENDGRID_HOSTNAME,
-        "port": null,
-        "path": "/v3/mail/send",
-        "headers": {
-            "authorization": "Bearer "+SENDGRID_API_KEY,
-            "content-type": "application/json"
+
+    var request = req(options);
+
+    request.write(JSON.stringify({
+        content:
+            [{
+                type: 'text/plain',
+                value: 'Hello this is test email from SENDGRID.'
+            }],
+        personalizations:
+            [{
+                to: emailRecipients,
+                cc: emailRecipientsCC,
+                bcc: emailRecipientsBCC,
+                subject: this.options.emailSubject
+            }],
+        from: {email: this.options.emailSender, name: 'Neha'},
+        reply_to: {email: this.options.emailSender, name: 'Neha'}
+    }));
+    // if no callback, the outcome doesn't matter
+    if (!callback)
+        return;
+
+    request.on('error', function (error) {
+        callback(error);
+    });
+
+    request.on('response', function (response) {
+        if (response.statusCode == 202) {
+            var provider ='Sendgrid';
+
+            callback();
+            response.socket.end();
+            return;
         }
-    };
 
-        var req = http
-            .request(options, function (res) {
-            var chunks = [];
+        var body = '';
 
-            //calls when error
-           res.on("data", function (chunk) {
-               MailgunService.sendEmail(inputvar,response);
-               chunks.push(chunk);
-            });
-
-            res.on("end", function () {
-                var body = Buffer.concat(chunks);
-                console.log(body.toString());
-            });
-            if(res.statusCode == '202'){
-                console.log('request',res.statusCode);
-                response.render('index', {
-                    sent: true,
-                    provider: 'SENDGRID',
-                    response: res
-                });
-            }
-
+        response.on('data', function (chunk) {
+            body += chunk;
+            console.log('body,',body);
         });
-        req.write(JSON.stringify({
-            content:
-                [{
-                    type: 'text/plain',
-                    value: 'Hello this is test email from SENDGRID.'
-                }],
-            personalizations:
-                [{
-                    to: emailRecipients,
-                    cc: emailRecipientsCC,
-                    bcc: emailRecipientsBCC,
-                    subject: SENDGRID_SUBJECT
-                }],
-            from: {email: SENDGRID_SENDER, name: 'Neha'},
-            reply_to: {email: SENDGRID_SENDER, name: 'Neha'}
-        }));
-        req.end();
 
+        response.on('end', function (chunk) {
+            var error = new Error('Email could not be sent');
+            error.httpStatusCode = response.statusCode;
+            error.httpResponseData = JSON.parse(body).errors[0].message;
 
-
+            callback(error);
+        });
+    });
 }
-module.exports = {sendEmail};

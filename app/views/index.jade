@@ -12,7 +12,10 @@ html
             p Send emails via Sendgrid and Mailgun
         hr
         if sent
-            p Email succesfully sent.
+            div(class="container")
+             p Email succesfully sent.
+             a(href="/")
+                button(type="button") send again
         else
             div(class="container")
                 h1 Send Email Form

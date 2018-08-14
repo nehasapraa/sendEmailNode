@@ -40,9 +40,10 @@ app.use(function (req, res, next) {
 
 
 var server = app.listen(3000, function () {
-
     var host = server.address().address;
-    var port = server.address().port;
+    var port = normalizePort(process.env.PORT || '3000');
+
+
     console.log('Email test app listening at http://%s:%s', host, port);
 
 
